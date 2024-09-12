@@ -343,7 +343,7 @@
 				<SynchronousCommand wcm:action="add">
 					<Order>6</Order>
 					<Description>Executes the HKLM Registry Entries Script</Description>
-					<CommandLine>cmd.exe /c "F:\currentuser.cmd &gt;&gt;"C:\Windows\Temp\currentuser.log" 2&gt;&amp;1"</CommandLine>
+					<CommandLine>cmd.exe /c "C:\Windows\Temp\currentuser.cmd &gt;&gt;"C:\Windows\Temp\currentuser.log" 2&gt;&amp;1"</CommandLine>
 				</SynchronousCommand>
 			</FirstLogonCommands>
 		</component>

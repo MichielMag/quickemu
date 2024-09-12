@@ -191,22 +191,22 @@
 				<RunSynchronousCommand wcm:action="add">
 					<Order>2</Order>
 					<Description>Executes the remove-packages Powershell Script</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\remove-packages.ps1' -Raw | Invoke-Expression;"</Path>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\remove-packages.ps1' -Raw | Invoke-Expression;"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>3</Order>
 					<Description>Run Chris Titus WinUtil Tweaks</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\wintweaks.ps1' -Raw | Invoke-Expression;"</Path>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\wintweaks.ps1' -Raw | Invoke-Expression;"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>4</Order>
 					<Description>Executes the HKLM Registry Entries Script</Description>
-					<Path>cmd.exe /c "C:\Windows\Setup\Scripts\localmachine.cmd &gt;&gt;"C:\Windows\Setup\Scripts\localmachine.log" 2&gt;&amp;1"</Path>
+					<Path>cmd.exe /c "C:\Windows\Temp\localmachine.cmd &gt;&gt;"C:\Windows\Temp\localmachine.log" 2&gt;&amp;1"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>5</Order>
 					<Description>Adds Items to Right-Click Context Menu</Description>
-					<Path>cmd.exe /c "reg.exe import "C:\Windows\Setup\Scripts\contextmenu.reg" &gt;&gt;"C:\Windows\Setup\Scripts\contextmenu.log" 2&gt;&amp;1"</Path>
+					<Path>cmd.exe /c "reg.exe import "C:\Windows\Temp\contextmenu.reg" &gt;&gt;"C:\Windows\Temp\contextmenu.log" 2&gt;&amp;1"</Path>
 				</RunSynchronousCommand>
 			</RunSynchronous>
 		</component>
@@ -343,7 +343,7 @@
 				<SynchronousCommand wcm:action="add">
 					<Order>6</Order>
 					<Description>Executes the HKLM Registry Entries Script</Description>
-					<CommandLine>cmd.exe /c "F:\currentuser.cmd &gt;&gt;"C:\Windows\Setup\Scripts\currentuser.log" 2&gt;&amp;1"</CommandLine>
+					<CommandLine>cmd.exe /c "F:\currentuser.cmd &gt;&gt;"C:\Windows\Temp\currentuser.log" 2&gt;&amp;1"</CommandLine>
 				</SynchronousCommand>
 			</FirstLogonCommands>
 		</component>
@@ -354,7 +354,7 @@ param(
     [xml] $Document
 );
 
-$scriptsDir = 'C:\Windows\Setup\Scripts\';
+$scriptsDir = 'C:\Windows\Temp\';
 foreach( $file in $Document.unattend.Extensions.File ) {
     $path = [System.Environment]::ExpandEnvironmentVariables(
         $file.GetAttribute( 'path' )
@@ -371,7 +371,7 @@ foreach( $file in $Document.unattend.Extensions.File ) {
 }
 		</ExtractScript>
 		<!--Removes Preinstalled Bloatware Apps-->
-		<File path="C:\Windows\Setup\Scripts\remove-packages.ps1">
+		<File path="C:\Windows\Temp\remove-packages.ps1">
 			<![CDATA[
   Get-AppxProvisionedPackage -Online |
   Where-Object -Property 'DisplayName' -In -Value @(
@@ -437,10 +437,10 @@ Where-Object -FilterScript {
 } | Remove-WindowsCapability -Online]]>
 		</File>
 		<!--Powershell Script to Run Various Tweaks, Most of These are from the Chris Titus Tech Windows Utility (Credit:https://christitus.com/windows-tool/)-->
-		<File path="C:\Windows\Setup\Scripts\wintweaks.ps1">
+		<File path="C:\Windows\Temp\wintweaks.ps1">
 			<![CDATA[
   # Start Transcript to capture script output
-  $logFile = "C:\Windows\Setup\Scripts\wintweaks.log"
+  $logFile = "C:\Windows\Temp\wintweaks.log"
   Start-Transcript -Path $logFile
   
   # Enables .NET Framework 3.5
@@ -824,7 +824,7 @@ Where-Object -FilterScript {
   Stop-Transcript]]>
 		</File>
 		<!--Local Machine Registry Entries - This Sets Features for the Local Machine-->
-		<File path="C:\Windows\Setup\Scripts\localmachine.cmd">
+		<File path="C:\Windows\Temp\localmachine.cmd">
 			<![CDATA[
 :: Bypasses Microsoft Account Creation
 reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v BypassNRO /t REG_DWORD /d 1 /f
@@ -1004,7 +1004,7 @@ reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "Product
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WorkplaceJoin" /v BlockAADWorkplaceJoin /t REG_DWORD /d 1 /f]]>
 		</File>
 		<!--Adds Items to Right-Click Context Menu-->
-		<File path="C:\Windows\Setup\Scripts\contextmenu.reg">
+		<File path="C:\Windows\Temp\contextmenu.reg">
 			<![CDATA[
     Windows Registry Editor Version 5.00
     
@@ -1038,7 +1038,7 @@ reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WorkplaceJoin" /v BlockAAD
     [HKEY_CLASSES_ROOT\Drive\shell\runas\command]
     @="cmd.exe /c takeown /f \"%1\\\" /r /d y && icacls \"%1\\\" /grant *S-1-3-4:F /t /c & Pause" "IsolatedCommand"="cmd.exe /c takeown /f \"%1\\\" /r /d y && icacls \"%1\\\" /grant *S-1-3-4:F /t /c & Pause"]]>
 		</File>
-		<File path="C:\Windows\Setup\Scripts\currentuser.cmd">
+		<File path="C:\Windows\Temp\currentuser.cmd">
 			<![CDATA[
 :: Disabling the Delivery of Personalized or Suggested Content Like App Suggestions, Tips, and Advertisements in Windows
 reg.exe add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "ContentDeliveryAllowed" /t REG_DWORD /d 0 /f

@@ -185,28 +185,23 @@
 			<RunSynchronous>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>1</Order>
-					<Description>Extracts Scripts in this XML File</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
+					<Description>Executes the remove-packages Powershell Script</Description>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'F:\removebloatware.ps1' -Raw | Invoke-Expression;"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>2</Order>
-					<Description>Executes the remove-packages Powershell Script</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'F:\remove-bloatware.ps1' -Raw | Invoke-Expression;"</Path>
+					<Description>Run Chris Titus WinUtil Tweaks</Description>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'F:\varioustweaks.ps1' -Raw | Invoke-Expression;"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>3</Order>
-					<Description>Run Chris Titus WinUtil Tweaks</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'F:\various-tweaks.ps1' -Raw | Invoke-Expression;"</Path>
+					<Description>Executes the HKLM Registry Entries Script</Description>
+					<Path>cmd.exe /c "F:\localmachine.cmd &gt;&gt;"C:\Windows\Panther\localmachine.log" 2&gt;&amp;1"</Path>
 				</RunSynchronousCommand>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>4</Order>
-					<Description>Executes the HKLM Registry Entries Script</Description>
-					<Path>cmd.exe /c "F:\local-machine.cmd &gt;&gt;"C:\Windows\Setup\Scripts\local-machine.log" 2&gt;&amp;1"</Path>
-				</RunSynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>5</Order>
 					<Description>Adds Items to Right-Click Context Menu</Description>
-					<Path>cmd.exe /c "reg.exe import "F:\context-menu.reg" &gt;&gt;"C:\Windows\Setup\Scripts\context-menu.log" 2&gt;&amp;1"</Path>
+					<Path>cmd.exe /c "reg.exe import "F:\contextmenu.reg" &gt;&gt;"C:\Windows\Panther\contextmenu.log" 2&gt;&amp;1"</Path>
 				</RunSynchronousCommand>
 			</RunSynchronous>
 		</component>
@@ -257,6 +252,16 @@
 				</PathAndCredentials>
 			</DriverPaths>
 		</component>
+        <component language="neutral" name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <SetupUILanguage>
+                <UILanguage>en-US</UILanguage>
+            </SetupUILanguage>
+            <InputLocale>0413:00020409</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UILanguageFallback>en-US</UILanguageFallback>
+            <UserLocale>nl-NL</UserLocale>
+        </component>
 	</settings>
 
 	<settings pass="oobeSystem">
@@ -309,17 +314,17 @@
 					<Order>1</Order>
 				</SynchronousCommand>
 				<SynchronousCommand wcm:action="add">
-					<CommandLine>msiexec /i F:\spice-webdavd-x64-latest.msi /quiet /passive /qn</CommandLine>
+					<CommandLine>msiexec /i F:\spicewebdav.msi /quiet /passive /qn</CommandLine>
 					<Description>Install spice-webdavd file sharing agent</Description>
 					<Order>2</Order>
 				</SynchronousCommand>
 				<SynchronousCommand wcm:action="add">
-					<CommandLine>msiexec /i F:\UsbDk_1.0.22_x64.msi /quiet /passive /qn</CommandLine>
+					<CommandLine>msiexec /i F:\usbdk.msi /quiet /passive /qn</CommandLine>
 					<Description>Install usbdk USB sharing agent</Description>
 					<Order>3</Order>
 				</SynchronousCommand>
 				<SynchronousCommand wcm:action="add">
-					<CommandLine>msiexec /i F:\spice-vdagent-x64-0.10.0.msi /quiet /passive /qn</CommandLine>
+					<CommandLine>msiexec /i F:\spicevdagent.msi /quiet /passive /qn</CommandLine>
 					<Description>Install spice-vdagent SPICE agent</Description>
 					<Order>4</Order>
 				</SynchronousCommand>
@@ -328,11 +333,11 @@
 					<Description>Disable Hibernation</Description>
 					<Order>5</Order>
 				</SynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
+				<SynchronousCommand wcm:action="add">
 					<Order>6</Order>
 					<Description>Executes the HKLM Registry Entries Script</Description>
-					<Path>cmd.exe /c "F:\current-user.cmd &gt;&gt;"C:\Windows\Setup\Scripts\current-user.log" 2&gt;&amp;1"</Path>
-				</RunSynchronousCommand>
+					<CommandLine>cmd.exe /c "F:\currentuser.cmd &gt;&gt;"C:\Windows\Panther\currentuser.log" 2&gt;&amp;1"</CommandLine>
+				</SynchronousCommand>
 			</FirstLogonCommands>
 		</component>
 	</settings>

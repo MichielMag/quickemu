@@ -56,6 +56,35 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<CEIPEnabled>0</CEIPEnabled>
 		</component>
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<RunSynchronous>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>1</Order>
+					<Description>Extracts and Executes Scripts in this XML File</Description>
+					<Path>powershell.exe -NoProfile -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>2</Order>
+					<Description>Executes the remove-packages Powershell Script</Description>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\remove-packages.ps1' -Raw | Invoke-Expression;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>3</Order>
+					<Description>Run Chris Titus WinUtil Tweaks</Description>
+					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\wintweaks.ps1' -Raw | Invoke-Expression;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>4</Order>
+					<Description>Executes the HKLM Registry Entries Script</Description>
+					<Path>cmd.exe /c "C:\Windows\Temp\localmachine.cmd &gt;&gt;"C:\Windows\Temp\localmachine.log" 2&gt;&amp;1"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>5</Order>
+					<Description>Adds Items to Right-Click Context Menu</Description>
+					<Path>cmd.exe /c "reg.exe import "C:\Windows\Temp\contextmenu.reg" &gt;&gt;"C:\Windows\Temp\contextmenu.log" 2&gt;&amp;1"</Path>
+				</RunSynchronousCommand>
+			</RunSynchronous>
+		</component>
 	</settings>
 
 	<settings pass="windowsPE">
@@ -181,35 +210,7 @@
 				</ProductKey>
 			</UserData>
 		</component>
-		<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-			<RunSynchronous>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>1</Order>
-					<Description>Extracts and Executes Scripts in this XML File</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
-				</RunSynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>2</Order>
-					<Description>Executes the remove-packages Powershell Script</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\remove-packages.ps1' -Raw | Invoke-Expression;"</Path>
-				</RunSynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>3</Order>
-					<Description>Run Chris Titus WinUtil Tweaks</Description>
-					<Path>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\wintweaks.ps1' -Raw | Invoke-Expression;"</Path>
-				</RunSynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>4</Order>
-					<Description>Executes the HKLM Registry Entries Script</Description>
-					<Path>cmd.exe /c "C:\Windows\Temp\localmachine.cmd &gt;&gt;"C:\Windows\Temp\localmachine.log" 2&gt;&amp;1"</Path>
-				</RunSynchronousCommand>
-				<RunSynchronousCommand wcm:action="add">
-					<Order>5</Order>
-					<Description>Adds Items to Right-Click Context Menu</Description>
-					<Path>cmd.exe /c "reg.exe import "C:\Windows\Temp\contextmenu.reg" &gt;&gt;"C:\Windows\Temp\contextmenu.log" 2&gt;&amp;1"</Path>
-				</RunSynchronousCommand>
-			</RunSynchronous>
-		</component>
+
 		<component name="Microsoft-Windows-PnpCustomizationsWinPE" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" processorArchitecture="amd64"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -344,6 +345,26 @@
 					<Order>6</Order>
 					<Description>Executes the HKLM Registry Entries Script</Description>
 					<CommandLine>cmd.exe /c "C:\Windows\Temp\currentuser.cmd &gt;&gt;"C:\Windows\Temp\currentuser.log" 2&gt;&amp;1"</CommandLine>
+				</SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <Order>7</Order>
+                    <Description>Installs Winget</Description>
+                    <CommandLine>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-Content -LiteralPath 'C:\Windows\Temp\installwinget.ps1' -Raw | Invoke-Expression;"</CommandLine>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <Order>8</Order>
+                    <Description>Mounts network drive</Description>
+                    <CommandLine>powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -Command 'New-PSDrive -Name "Z" -PSProvider "FileSystem" -Root "\\10.0.2.4\qemu" -Persist'</CommandLine>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <Order>9</Order>
+                    <Description>Installs software using Winget Configuration</Description>
+                    <CommandLine>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "winget configure C:\Windows\Temp\winget.yml --accept-configuration-agreements --disable-interactivity"</CommandLine>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+					<Order>10</Order>
+					<Description>Executes the HKLM Registry Entries Script</Description>
+					<CommandLine>cmd.exe /c "shutdown /r -t 1"</CommandLine>
 				</SynchronousCommand>
 			</FirstLogonCommands>
 		</component>
@@ -1288,9 +1309,7 @@ reg.exe add "HKEY_CURRENT_USER\Software\Microsoft\Multimedia\Audio" /v "UserDuck
 
 :: Enables User Account Control (Default Value)
 reg.exe add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 3 /f
-
-:: Restart PC to Apply All Changes
-shutdown /r -t 1]]>
+]]>
 		</File>
 		<!--Start Menu Template (Credit:https://schneegans.de/windows/unattend-generator/)-->
 		<File path="C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml">
@@ -1305,6 +1324,118 @@ shutdown /r -t 1]]>
 </LayoutModificationTemplate>
 		]]>
 		</File>
+        <File path="C:\Windows\Temp\installwinget.ps1">
+            <![CDATA[
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -ErrorAction SilentlyContinue
 
+Invoke-WebRequest `
+    -URI https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.3 `
+    -OutFile xaml.zip -UseBasicParsing
+New-Item -ItemType Directory -Path xaml
+Expand-Archive -Path xaml.zip -DestinationPath xaml
+Add-AppxPackage -Path "xaml\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx" -ErrorAction SilentlyContinue
+Remove-Item xaml.zip -ErrorAction SilentlyContinue
+Remove-Item xaml -Recurse -ErrorAction SilentlyContinue
+
+Invoke-WebRequest `
+    -URI https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx `
+    -OutFile UWPDesktop.appx -UseBasicParsing
+Add-AppxPackage UWPDesktop.appx -ErrorAction SilentlyContinue
+Remove-Item UWPDesktop.appx -ErrorAction SilentlyContinue
+
+# Get the download URL of the latest winget installer from GitHub:
+$API_URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+$DOWNLOAD_URL = $(Invoke-RestMethod $API_URL).assets.browser_download_url |
+    Where-Object {$_.EndsWith(".msixbundle")}
+
+Add-AppxPackage -Path $DOWNLOAD_URL -ForceApplicationShutdown -ErrorAction SilentlyContinue
+
+]]>
+        </File>
+        <File path="C:\Windows\Temp\winget.yml">
+            <![CDATA[
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+
+##########################################################################################################
+# This configuration will install the tools necessary to get started with C# development on Windows      #
+# Reference: https://learn.microsoft.com/visualstudio/get-started/csharp/tutorial-console                #
+#                                                                                                        #
+# This will:                                                                                             #
+#     * Enable Developer Mode                                                                            #
+#     * Install GitHub Desktop                                                                           #
+#     * Install Visual Studio Community 2022                                                             #
+#     * Install Managed Desktop Workload to Visual Studio Community 2022                                 #
+#     * Install Universal Workload to Visual Studio Community 2022                                       #
+#                                                                                                        #
+##########################################################################################################
+properties:
+  resources:
+    - resource: Microsoft.Windows.Developer/DeveloperMode
+      id: Enable
+      directives:
+        description: Enable Developer Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: GitHub Desktop
+      directives:
+        description: Install GitHub Desktop
+        allowPrerelease: true
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Visual Studio
+      directives:
+        description: Install Visual Studio 2022 Enterprise
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudio.2022.Enterprise
+        source: winget
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
+      id: Workloads ManagedDesktop
+      dependsOn:
+        - Visual Studio
+      directives:
+        description: Install required VS Workloads (ManagedDesktop)
+        allowPrerelease: true
+      settings:
+        productId: Microsoft.VisualStudio.Product.Enterprise
+        channelId: VisualStudio.17.Release                  
+        components:
+          - Microsoft.VisualStudio.Workload.ManagedDesktop
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
+      id: Workloads Universal
+      dependsOn:
+        - Visual Studio
+      directives:
+        description: Install required VS Workloads (Universal)
+        allowPrerelease: true
+      settings:
+        productId: Microsoft.VisualStudio.Product.Enterprise
+        channelId: VisualStudio.17.Release                  
+        components:
+          - Microsoft.VisualStudio.Workload.Universal
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Powershell
+      directives:
+        description: Install New Powershell
+        allowPrerelease: true
+      settings:
+        id: Microsoft.PowerShell
+        source: winget      
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Office365
+      directives:
+        description: Install Microsoft Office
+        allowPrerelease: true
+      settings:
+        id: Microsoft.Office
+        source: winget          
+  configurationVersion: 0.2.0
+  
+  ]]>
+        </File>
 	</Extensions>
 </unattend>

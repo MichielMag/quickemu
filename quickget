@@ -1209,6 +1209,11 @@ function web_get() {
         echo "- URL: ${URL}"
     fi
 
+    if test -f "${DIR}/${FILE}"; then
+        echo "File ${FILE} already exists in ${DIR}, skipping download."
+        return
+    fi
+
     if ! curl --progress-bar --location --output "${DIR}/${FILE}" --continue-at - --user-agent "${USER_AGENT}" "${HEADERS[@]}" -- "${URL}"; then
         echo "ERROR! Failed to download ${URL} with curl."
         rm -f "${DIR}/${FILE}"
